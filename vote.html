@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Voting System</title>
+</head>
+<body>
+    <h1>Pacopolis Voting System</h1>
+
+    <!-- Mayor choices -->    
+     <h2>Mayor Race</h2>
+    <input type="radio" name="mayor" value="Pat Mann" onclick="updateReview()"> Pat Mann<br>
+    <input type="radio" name="mayor" value="Dawn Keykong" onclick="updateReview()"> Dawn Keykong<br><br>
+
+    <!-- Issue choices -->
+    <h2>Issue 1: Build a New Park?</h2>
+    <input type="radio" name="issue1" value="Yes" onclick="updateReview()"> Yes<br>
+    <input type="radio" name="issue1" value="No" onclick="updateReview()"> No<br><br>
+
+    <!-- Buttons -->
+    <button onclick="confirmVote()">Confirm Vote</button>
+    <button onclick="showResults()">Show Results</button>
+    <button onclick="resetElection()">Reset Election</button>
+
+    <!-- Output area -->
+    <h2>Your Vote / Results:</h2>
+    <p id="output">Please complete the ballot.</p>
+
+    <script>
+        // Stores total vote counts
+        let results = {
+            mayor: {
+                "Pat Mann": 0,
+                "Dawn Keykong": 0
+            },
+            issue1: {
+                "Yes": 0,
+                "No": 0
+            }
+        };
+
+        // Stores the current selections the user has made
+        let currentVote = {
+            mayor: null,
+            issue1: null
+        };
+
+        let hasVoted = false;
+
+        // Updates the live review whenever the user clicks a ballot option
+        function updateReview() {
+            let mayorChoice = document.querySelector('input[name="mayor"]:checked');
+            let issueChoice = document.querySelector('input[name="issue1"]:checked');
+            let output = document.getElementById("output");
+
+            // If the user already voted, do not let them change anything
+            if (hasVoted) {
+                output.innerHTML = "You have already voted. Duplicate voting is not allowed.";
+                return;
+            }
+
+            // If both choices are not selected yet, show message
+            if (mayorChoice == null || issueChoice == null) {
+                output.innerHTML = "Please complete the ballot.";
+                return;
+            }
+
+            currentVote.mayor = mayorChoice.value;
+            currentVote.issue1 = issueChoice.value;
+
+            // Show live review
+            output.innerHTML =
+                "Current Selection:<br>" +
+                "Mayor: " + currentVote.mayor +
+                " | Issue 1: " + currentVote.issue1;
+        }
+
+        // Confirms the vote and adds it to the totals
+        function confirmVote() {
+            let output = document.getElementById("output");
+
+            // Prevent duplicate voting
+            if (hasVoted) {
+                output.innerHTML = "You have already voted. Duplicate voting is not allowed.";
+                return;
+            }
+
+            // Prevent confirming before completing the ballot
+            if (currentVote.mayor == null || currentVote.issue1 == null) {
+                output.innerHTML = "Please complete the ballot before confirming.";
+                return;
+            }
+
+            results.mayor[currentVote.mayor]++;
+            results.issue1[currentVote.issue1]++;
+
+            hasVoted = true;
+
+            output.innerHTML =
+                "Vote submitted!<br>" +
+                "Mayor: " + currentVote.mayor +
+                " | Issue 1: " + currentVote.issue1;
+        }
+
+        // Finds the winner of a category, including ties
+        function getWinner(category) {
+            let max = -1;
+            let winners = [];
+
+            for (let option in results[category]) {
+                let voteCount = results[category][option];
+
+                if (voteCount > max) {
+                    max = voteCount;
+                    winners = [option];
+                } else if (voteCount === max) {
+                    winners.push(option);
+                }
+            }
+
+            if (max === 0) {
+                return "No votes yet";
+            }
+
+            if (winners.length === 1) {
+                return winners[0];
+            }
+
+            return "Tie between " + winners.join(" and ");
+        }
+
+        // Shows current vote totals and winners
+        function showResults() {
+            let output = document.getElementById("output");
+
+            let mayorWinner = getWinner("mayor");
+            let issueWinner = getWinner("issue1");
+
+            output.innerHTML =
+                "Current Results:<br><br>" +
+                "Mayor Race:<br>" +
+                "Pat Mann: " + results.mayor["Pat Mann"] + "<br>" +
+                "Dawn Keykong: " + results.mayor["Dawn Keykong"] + "<br>" +
+                "Winner: " + mayorWinner + "<br><br>" +
+                "Issue 1:<br>" +
+                "Yes: " + results.issue1["Yes"] + "<br>" +
+                "No: " + results.issue1["No"] + "<br>" +
+                "Winning Option: " + issueWinner;
+        }
+
+        // Resets the election for testing
+        function resetElection() {
+            // Reset all vote totals
+            results.mayor["Pat Mann"] = 0;
+            results.mayor["Dawn Keykong"] = 0;
+            results.issue1["Yes"] = 0;
+            results.issue1["No"] = 0;
+
+            currentVote.mayor = null;
+            currentVote.issue1 = null;
+
+            hasVoted = false;
+
+            let radioButtons = document.querySelectorAll('input[type="radio"]');
+            for (let i = 0; i < radioButtons.length; i++) {
+                radioButtons[i].checked = false;
+            }
+
+            document.getElementById("output").innerHTML = "Election reset. Please complete the ballot.";
+        }
+    </script>
+</body>
+</html>
