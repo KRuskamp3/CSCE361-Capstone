@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login - Pacopolis Voting</title>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; padding-top: 50px; }
+        .login-container { border: 1px solid #ccc; padding: 20px; border-radius: 8px; }
+        input { display: block; margin-bottom: 10px; width: 200px; }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h1>Voter Login</h1>
+        <input type="text" id="firstName" placeholder="First Name">
+        <input type="text" id="lastName" placeholder="Last Name">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="handleLogin()">Login</button>
+        <p id="error" style="color: red;"></p>
+    </div>
+
+    <script>
+        // UNFINISHED
+        function handleLogin() {
+            const first = document.getElementById('firstName').value;
+            const last = document.getElementById('lastName').value;
+            const pass = document.getElementById('password').value;
+
+            // Bypasses credentials check (for now)
+            window.location.href = "vote.html";
+        }
+    </script>
+</body>
+</html>
