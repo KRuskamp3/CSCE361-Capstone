@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
     <title>Login - Pacopolis Voting</title>
     <style>
         * {
@@ -122,9 +123,36 @@
             text-align: center;
             margin-top: 1rem;
         }
+
+        .dark-toggle {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            background: none;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 12px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        body.dark .dark-toggle {
+            border-color: #555;
+            color: #bbb;
+        }
+
+        .dark-toggle:hover {
+            background: #f0f0f0;
+        }
+
+        body.dark .dark-toggle:hover {
+            background: #333;
+        }
     </style>
 </head>
 <body>
+    <button class="dark-toggle" onclick="toggleDark()" id="toggleBtn">Dark mode</button>
     <div class="card">
         <span class="badge">Pacopolis 2026</span>
         <h1>Voter login</h1>
@@ -132,16 +160,16 @@
         <div class="name-row">
             <div class="field">
                 <label for="firstName">First name</label>
-                <input type="text" id="firstName" placeholder="Jane">
+                <input type="text" id="firstName" placeholder="First">
             </div>
             <div class="field">
                 <label for="lastName">Last name</label>
-                <input type="text" id="lastName" placeholder="Doe">
+                <input type="text" id="lastName" placeholder="Last">
             </div>
         </div>
         <div class="field">
             <label for="password">Password</label>
-            <input type="password" id="password" placeholder="password">
+            <input type="password" id="password" placeholder="Password">
         </div>
         <button class="btn" onclick="handleLogin()">Continue to ballot</button>
         <p class="error" id="error"></p>
@@ -158,6 +186,36 @@
 
             // Bypasses credentials check (for now)
             window.location.href = "vote.html";
+        }
+
+        function toggleDark() {
+            const body = document.body;
+            const btn = document.getElementById('toggleBtn');
+            if (body.style.background === 'rgb(26, 26, 26)') {
+                body.style.background = '#f5f5f3';
+                document.querySelector('.card').style.background = 'white';
+                document.querySelector('.card').style.borderColor = '#e5e5e5';
+                document.querySelectorAll('input').forEach(i => { i.style.background = 'white'; i.style.color = '#111'; i.style.borderColor = '#ddd'; });
+                document.querySelector('.btn').style.background = '#111';
+                document.querySelector('.btn').style.color = 'white';
+                document.querySelector('h1').style.color = '#111';
+                document.querySelector('.subtitle').style.color = '#888';
+                btn.textContent = 'Dark mode';
+                btn.style.borderColor = '#ddd';
+                btn.style.color = '#666';
+            } else {
+                body.style.background = '#1a1a1a';
+                document.querySelector('.card').style.background = '#2a2a2a';
+                document.querySelector('.card').style.borderColor = '#444';
+                document.querySelectorAll('input').forEach(i => { i.style.background = '#333'; i.style.color = '#f0f0f0'; i.style.borderColor = '#555'; });
+                document.querySelector('.btn').style.background = '#f0f0f0';
+                document.querySelector('.btn').style.color = '#111';
+                document.querySelector('h1').style.color = '#f0f0f0';
+                document.querySelector('.subtitle').style.color = '#aaa';
+                btn.textContent = 'Light mode';
+                btn.style.borderColor = '#555';
+                btn.style.color = '#bbb';
+            }
         }
     </script>
 </body>
