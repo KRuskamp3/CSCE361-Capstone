@@ -1,10 +1,17 @@
 using System;
 using Microsoft.Data.SqlClient;
 
-public class sqlAccessor
+public class SqlAccessor
 {
- 
-    var connectionString = config.GetConnectionString("DefaultConnection");
+    private readonly string connectionString;
+
+    public SqlAccessor(string connectionString)
+    {
+        if (string.IsNullOrWhiteSpace(connectionString))
+            throw new ArgumentException("Connection string must not be empty.", nameof(connectionString));
+
+        this.connectionString = connectionString;
+    }
 
     /**
      Checks if the username exists. If it does, verify the password.
@@ -26,13 +33,11 @@ public class sqlAccessor
 
         using var reader = cmd.ExecuteReader();
 
-        // ❌ Username not found
         if (!reader.Read())
             return false;
 
         string storedHash = reader.GetString(0);
 
-        // ✅ Compare password with hash
         return BCrypt.Net.BCrypt.Verify(password, storedHash);
     }
 }
