@@ -8,4 +8,5 @@ public class Voter
 
     public bool Registered { get; set; } = true;
     public bool HasVoted { get; set; } = false;
+    public int UserId { get; set; }
 }
