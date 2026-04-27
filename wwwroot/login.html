@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Login - Pacopolis Voting</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f5f5f3;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #e5e5e5;
+            border-radius: 12px;
+            padding: 2.5rem 2rem;
+            width: 100%;
+            max-width: 380px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #e6f1fb;
+            color: #185fa5;
+            font-size: 11px;
+            padding: 3px 10px;
+            border-radius: 6px;
+            margin-bottom: 1.25rem;
+        }
+
+        h1 {
+            font-size: 22px;
+            font-weight: 500;
+            margin-bottom: 0.35rem;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 2rem;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .field {
+            margin-bottom: 1rem;
+        }
+
+        .name-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        input {
+            width: 100%;
+            padding: 0 12px;
+            height: 38px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            font-family: sans-serif;
+        }
+
+            input[type="password"] {
+                font-family: Verdana, sans-serif;
+            }
+
+            input:focus {
+                border-color: #378add;
+                box-shadow: 0 0 0 3px rgba(55,138,221,0.12);
+            }
+
+        .btn {
+            width: 100%;
+            height: 40px;
+            margin-top: 1.5rem;
+            background: #111;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+            .btn:hover {
+                background: #333;
+            }
+
+        .error {
+            font-size: 13px;
+            color: #c0392b;
+            margin-top: 0.75rem;
+            min-height: 18px;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid #eee;
+            margin: 1.5rem 0 0;
+        }
+
+        .footer {
+            font-size: 12px;
+            color: #aaa;
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .dark-toggle {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            background: none;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 12px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        body.dark .dark-toggle {
+            border-color: #555;
+            color: #bbb;
+        }
+
+        .dark-toggle:hover {
+            background: #f0f0f0;
+        }
+
+        body.dark .dark-toggle:hover {
+            background: #333;
+        }
+    </style>
+</head>
+<body>
+    <button class="dark-toggle" onclick="toggleDark()" id="toggleBtn">Dark mode</button>
+    <div class="card">
+        <span class="badge">Pacopolis 2026</span>
+        <h1>Voter login</h1>
+        <p class="subtitle">Enter your details to access your ballot.</p>
+        <div class="name-row">
+            <div class="field">
+                <label for="firstName">First name</label>
+                <input type="text" id="firstName" placeholder="First">
+            </div>
+            <div class="field">
+                <label for="lastName">Last name</label>
+                <input type="text" id="lastName" placeholder="Last">
+            </div>
+        </div>
+        <div class="field">
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Password">
+        </div>
+        <button class="btn" onclick="handleLogin()">Continue to ballot</button>
+        <p class="error" id="error"></p>
+        <hr>
+        <p class="footer">Your vote is private and secure.</p>
+    </div>
+
+    <script>
+
+async function handleLogin() {
+    const first = document.getElementById('firstName').value;
+    const last = document.getElementById('lastName').value;
+    const pass = document.getElementById('password').value;
+    const error = document.getElementById('error');
+
+    error.textContent = "";
+
+    if (!first || !last || !pass) {
+        error.textContent = "Please fill in all fields.";
+        return;
+    }
+
+    try {
+        const res = await fetch("/api/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                firstName: first,
+                lastName: last,
+                password: pass
+            })
+        });
+
+        if (!res.ok) {
+            const text = await res.text();
+            error.textContent = text;
+            return;
+        }
+
+        const data = await res.json();
+
+
+        sessionStorage.setItem("firstName", first);
+        sessionStorage.setItem("lastName", last);
+
+        window.location.href = "vote.html";
+
+    } catch (err) {
+        error.textContent = "Server not reachable.";
+    }
+}
+
+
+        function toggleDark() {
+            const body = document.body;
+            const btn = document.getElementById('toggleBtn');
+            if (body.style.background === 'rgb(26, 26, 26)') {
+                body.style.background = '#f5f5f3';
+                document.querySelector('.card').style.background = 'white';
+                document.querySelector('.card').style.borderColor = '#e5e5e5';
+                document.querySelectorAll('input').forEach(i => { i.style.background = 'white'; i.style.color = '#111'; i.style.borderColor = '#ddd'; });
+                document.querySelector('.btn').style.background = '#111';
+                document.querySelector('.btn').style.color = 'white';
+                document.querySelector('h1').style.color = '#111';
+                document.querySelector('.subtitle').style.color = '#888';
+                btn.textContent = 'Dark mode';
+                btn.style.borderColor = '#ddd';
+                btn.style.color = '#666';
+            } else {
+                body.style.background = '#1a1a1a';
+                document.querySelector('.card').style.background = '#2a2a2a';
+                document.querySelector('.card').style.borderColor = '#444';
+                document.querySelectorAll('input').forEach(i => { i.style.background = '#333'; i.style.color = '#f0f0f0'; i.style.borderColor = '#555'; });
+                document.querySelector('.btn').style.background = '#f0f0f0';
+                document.querySelector('.btn').style.color = '#111';
+                document.querySelector('h1').style.color = '#f0f0f0';
+                document.querySelector('.subtitle').style.color = '#aaa';
+                btn.textContent = 'Light mode';
+                btn.style.borderColor = '#555';
+                btn.style.color = '#bbb';
+            }
+        }
+    </script>
+</body>
+</html>
