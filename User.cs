@@ -12,5 +12,9 @@ public class User
     // Optional: role-based access (voter, admin, etc.)
     public string Role { get; set; } = "voter";
 
+    public string FirstName { get; set; } = "";
+    public string LastName { get; set; } = "";
+    
+
 
 }
